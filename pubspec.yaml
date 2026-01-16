@@ -1,5 +1,5 @@
-name: my_app_25_26
-description: "Application de gestion de projets et tacges - Cours Flutter L3GL Promo 2025/2026"
+name: sunuTask
+description: "Application de gestion de projets et taches - Cours Flutter L3GL Promo 2025/2026"
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 version: 1.0.0+1
