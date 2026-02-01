@@ -38,4 +38,12 @@ class StorageService {
     _initialized = true;
   }
 
+  // ======== Cles de Stockage =========
+  static const String _keyOnboardingConmplete = 'onboarding_complete';
+
+
+  bool get isOnboardingComplete {
+    return _prefs.getBool(_keyOnboardingConmplete) ?? false;
+  }
+
 }
