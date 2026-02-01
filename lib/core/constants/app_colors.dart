@@ -23,6 +23,7 @@ class AppColors {
   static const Color secondary = Color(0xFF61E561);
   static const Color secondaryLight = Color(0xFF41F246);
   static const Color secondaryDark = Color(0xFF05412B);
+  static const Color white = Color(0xFFFFFFFF);
 
   //========= Couleurs neutres ==============
 
