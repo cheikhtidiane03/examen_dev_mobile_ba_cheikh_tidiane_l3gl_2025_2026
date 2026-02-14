@@ -1,4 +1,4 @@
-name: sunuTask
+name: sunu_task
 description: "Application de gestion de projets et taches - Cours Flutter L3GL Promo 2025/2026"
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 

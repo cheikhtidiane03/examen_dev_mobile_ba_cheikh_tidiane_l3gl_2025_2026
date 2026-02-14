@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:sunuTask/core/theme/app_theme.dart';
-import 'package:sunuTask/screens/splash/splash_screen.dart';
-import 'package:sunuTask/services/storage_service.dart';
+import 'package:sunu_task/core/theme/app_theme.dart';
+import 'package:sunu_task/screens/splash/splash_screen.dart';
+import 'package:sunu_task/services/storage_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

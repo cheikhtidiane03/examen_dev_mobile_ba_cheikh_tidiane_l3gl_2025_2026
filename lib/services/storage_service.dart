@@ -46,4 +46,8 @@ class StorageService {
     return _prefs.getBool(_keyOnboardingConmplete) ?? false;
   }
 
+  Future<void> setOnboardingComplete(bool value) async {
+    await _prefs.setBool(_keyOnboardingConmplete, value);
+  }
+
 }

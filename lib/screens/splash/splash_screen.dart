@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:sunuTask/core/constants/app_strings.dart';
-import 'package:sunuTask/screens/home/home_screen.dart';
-import 'package:sunuTask/screens/onboarding/onboarding_screen.dart';
-import 'package:sunuTask/services/storage_service.dart';
+import 'package:sunu_task/core/constants/app_strings.dart';
+import 'package:sunu_task/screens/home/home_screen.dart';
+import 'package:sunu_task/screens/onboarding/onboarding_screen.dart';
+import 'package:sunu_task/services/storage_service.dart';
 
 import '../../core/constants/app_colors.dart';
 

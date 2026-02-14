@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sunuTask/core/constants/app_colors.dart';
-import 'package:sunuTask/core/constants/app_strings.dart';
+import 'package:sunu_task/core/constants/app_colors.dart';
+import 'package:sunu_task/core/constants/app_strings.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
