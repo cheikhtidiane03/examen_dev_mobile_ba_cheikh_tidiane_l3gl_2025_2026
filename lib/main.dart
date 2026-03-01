@@ -1,29 +1,49 @@
+// lib/main.dart
+
 import 'package:flutter/material.dart';
-import 'package:sunu_task/core/theme/app_theme.dart';
-import 'package:sunu_task/screens/splash/splash_screen.dart';
-import 'package:sunu_task/services/storage_service.dart';
+import 'providers/app_provider.dart';
+import 'providers/auth_provider.dart';
+import 'providers/project_provider.dart';
+import 'providers/task_provider.dart';
+import 'services/storage_service.dart';
+import 'screens/splash/splash_screen.dart';
 
 void main() async {
+  // Obligatoire avant tout appel asynchrone dans main()
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Initialiser SharedPreferences UNE SEULE FOIS au démarrage
   await StorageService.instance.init();
 
-  runApp(const SunuTask());
+  runApp(const SunuTaskApp());
 }
 
-class SunuTask extends StatelessWidget {
-  const SunuTask({super.key});
+class SunuTaskApp extends StatefulWidget {
+  const SunuTaskApp({super.key});
 
-  // This widget is the root of your application.
+  @override
+  State<SunuTaskApp> createState() => _SunuTaskAppState();
+}
+
+class _SunuTaskAppState extends State<SunuTaskApp> {
+  // Créer les providers UNE SEULE FOIS
+  final AppProvider _appProvider = AppProvider();
+  final AuthProvider _authProvider = AuthProvider();
+  final ProjectProvider _projectProvider = ProjectProvider();
+  final TaskProvider _taskProvider = TaskProvider();
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'SunuTask',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.light,
-      home: SplashScreen(),
+      // Passer les providers au SplashScreen qui gérera la navigation
+      home: SplashScreen(
+        appProvider: _appProvider,
+        authProvider: _authProvider,
+        projectProvider: _projectProvider,
+        taskProvider: _taskProvider,
+      ),
     );
   }
 }

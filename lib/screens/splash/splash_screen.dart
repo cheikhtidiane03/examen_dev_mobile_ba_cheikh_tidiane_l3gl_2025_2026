@@ -2,6 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:sunu_task/core/constants/app_strings.dart';
+import 'package:sunu_task/providers/app_provider.dart';
+import 'package:sunu_task/providers/auth_provider.dart';
+import 'package:sunu_task/providers/project_provider.dart';
+import 'package:sunu_task/providers/task_provider.dart';
 import 'package:sunu_task/screens/home/home_screen.dart';
 import 'package:sunu_task/screens/onboarding/onboarding_screen.dart';
 import 'package:sunu_task/services/storage_service.dart';
@@ -9,7 +13,7 @@ import 'package:sunu_task/services/storage_service.dart';
 import '../../core/constants/app_colors.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+  const SplashScreen({super.key, required AppProvider appProvider, required AuthProvider authProvider, required ProjectProvider projectProvider, required TaskProvider taskProvider});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
