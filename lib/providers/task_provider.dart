@@ -1,5 +1,3 @@
-// lib/providers/task_provider.dart
-
 import 'package:flutter/foundation.dart';
 import '../models/Task.dart';
 import '../services/storage_service.dart';
@@ -8,14 +6,11 @@ import '../services/storage_service.dart';
  * TaskProvider - Gère les tâches d'un projet avec filtrage et tri
  */
 class TaskProvider extends ChangeNotifier {
-  // ── Propriétés privées ──────────────────────────────────────────────────────
   List<Task> _tasks = [];
   TaskStatus? _statusFilter;
   TaskPriority? _priorityFilter;
   bool _isLoading = false;
   String? _error;
-
-  // ── Getters publics ─────────────────────────────────────────────────────────
 
   /**
    * Retourne les tâches filtrées et triées selon les critères actifs
@@ -24,17 +19,14 @@ class TaskProvider extends ChangeNotifier {
   List<Task> get tasks {
     List<Task> result = List<Task>.from(_tasks);
 
-    // Appliquer le filtre par statut
     if (_statusFilter != null) {
       result = result.where((t) => t.status == _statusFilter).toList();
     }
 
-    // Appliquer le filtre par priorité
     if (_priorityFilter != null) {
       result = result.where((t) => t.priority == _priorityFilter).toList();
     }
 
-    // Tri par statut puis par priorité
     result.sort((a, b) {
       final int s = _statusOrder(a.status).compareTo(_statusOrder(b.status));
       if (s != 0) return s;
@@ -44,7 +36,6 @@ class TaskProvider extends ChangeNotifier {
     return result;
   }
 
-  /// Toutes les tâches sans filtre (pour les statistiques)
   List<Task> get allTasks => List.unmodifiable(_tasks);
 
   /**
@@ -68,8 +59,6 @@ class TaskProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
   bool get hasActiveFilters => _statusFilter != null || _priorityFilter != null;
-
-  // ── Méthodes CRUD ────────────────────────────────────────────────────────────
 
   /**
    * Charge les tâches d'un projet
@@ -184,8 +173,6 @@ class TaskProvider extends ChangeNotifier {
     _priorityFilter = null;
     notifyListeners();
   }
-
-  // ── Filtres ──────────────────────────────────────────────────────────────────
 
   /**
    * Filtre les tâches par statut (null = désactiver le filtre)

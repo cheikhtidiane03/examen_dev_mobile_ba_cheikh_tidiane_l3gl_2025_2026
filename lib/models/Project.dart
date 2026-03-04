@@ -7,26 +7,21 @@ import 'package:flutter/material.dart';
  * modifications et faciliter la gestion d'etat
  */
 class Project {
-  /// Identifiant unique du projet (UUID)
+
   final String id;
 
-  /// ID du propriétaire (lien vers User)
   final String userId;
 
-  /// Nom du projet
   final String name;
 
-  /// Description du projet (optionnelle)
   final String? description;
 
-  /// Couleur stockée en int (Color.value) car SharedPreferences ne stocke pas Color
   final int color;
 
   final DateTime createdAt;
 
   final DateTime updatedAt;
 
-  /// Constructeur
   Project({
     required this.id,
     required this.userId,

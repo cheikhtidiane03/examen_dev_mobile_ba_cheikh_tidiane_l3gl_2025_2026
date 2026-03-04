@@ -1,5 +1,3 @@
-// lib/providers/project_provider.dart
-
 import 'package:flutter/foundation.dart';
 import '../models/Project.dart';
 import '../services/storage_service.dart';
@@ -8,20 +6,18 @@ import '../services/storage_service.dart';
  * ProjectProvider - Gère la collection de projets de l'utilisateur
  */
 class ProjectProvider extends ChangeNotifier {
-  // ── Propriétés privées ──────────────────────────────────────────────────────
+
   List<Project> _projects = [];
   Project? _selectedProject;
   bool _isLoading = false;
   String? _error;
 
-  // ── Getters publics ─────────────────────────────────────────────────────────
   List<Project> get projects => List.unmodifiable(_projects);
   Project? get selectedProject => _selectedProject;
   int get projectCount => _projects.length;
   bool get isLoading => _isLoading;
   String? get error => _error;
 
-  // ── Méthodes CRUD ────────────────────────────────────────────────────────────
 
   /**
    * Charge tous les projets de l'utilisateur connecté
@@ -34,7 +30,6 @@ class ProjectProvider extends ChangeNotifier {
 
     try {
       _projects = StorageService.instance.getProjectsByUser(userId);
-      // Tri : projets les plus récents en premier
       _projects.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     } catch (e) {
       _error = 'Impossible de charger les projets.';
@@ -55,7 +50,6 @@ class ProjectProvider extends ChangeNotifier {
 
     try {
       await StorageService.instance.addProject(project);
-      // Insérer en tête de liste (plus récent en premier)
       _projects.insert(0, project);
     } catch (e) {
       _error = 'Impossible de créer le projet.';
@@ -76,13 +70,11 @@ class ProjectProvider extends ChangeNotifier {
     try {
       await StorageService.instance.updateProject(project);
 
-      // Mettre à jour dans la liste locale
       final int index = _projects.indexWhere((p) => p.id == project.id);
       if (index != -1) {
         _projects[index] = project;
       }
 
-      // Mettre à jour le projet sélectionné si c'est lui
       if (_selectedProject?.id == project.id) {
         _selectedProject = project;
       }
@@ -106,7 +98,6 @@ class ProjectProvider extends ChangeNotifier {
       await StorageService.instance.deleteProject(projectId);
       _projects.removeWhere((p) => p.id == projectId);
 
-      // Désélectionner si c'était le projet courant
       if (_selectedProject?.id == projectId) {
         _selectedProject = null;
       }

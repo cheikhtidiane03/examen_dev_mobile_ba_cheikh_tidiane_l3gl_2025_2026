@@ -1,5 +1,3 @@
-// lib/providers/auth_provider.dart
-
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 import '../models/user.dart';
@@ -9,12 +7,10 @@ import '../services/storage_service.dart';
  * AuthProvider - Gère l'authentification et la session utilisateur
  */
 class AuthProvider extends ChangeNotifier {
-  // ── Propriétés privées ──────────────────────────────────────────────────────
   User? _currentUser;
   bool _isLoading = false;
   String? _error;
 
-  // ── Getters publics ─────────────────────────────────────────────────────────
   User? get currentUser => _currentUser;
 
   /// true si un utilisateur est connecté
@@ -22,8 +18,6 @@ class AuthProvider extends ChangeNotifier {
 
   bool get isLoading => _isLoading;
   String? get error => _error;
-
-  // ── Méthodes ────────────────────────────────────────────────────────────────
 
   /**
    * Charge l'utilisateur courant depuis le stockage
@@ -33,7 +27,6 @@ class AuthProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    // getCurrentUser() est SYNCHRONE dans notre StorageService
     _currentUser = StorageService.instance.getCurrentUser();
 
     _isLoading = false;
@@ -59,10 +52,8 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // Étape 2 : getUsers() est SYNCHRONE
       final List<User> users = StorageService.instance.getUsers();
 
-      // Étape 3 : chercher l'utilisateur
       User? found;
       for (final User u in users) {
         if (u.email.toLowerCase() == email.trim().toLowerCase() &&
@@ -73,12 +64,10 @@ class AuthProvider extends ChangeNotifier {
       }
 
       if (found != null) {
-        // Étape 4 : sauvegarder la session
         await StorageService.instance.saveCurrentUser(found);
         _currentUser = found;
         return true;
       } else {
-        // Étape 5 : erreur
         _error = 'Email ou mot de passe incorrect.';
         return false;
       }
@@ -86,7 +75,6 @@ class AuthProvider extends ChangeNotifier {
       _error = 'Une erreur est survenue. Veuillez réessayer.';
       return false;
     } finally {
-      // Étape 6
       _isLoading = false;
       notifyListeners();
     }
@@ -108,7 +96,6 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // Étape 1 : vérifier l'unicité de l'email
       final List<User> users = StorageService.instance.getUsers();
       final bool emailExists = users.any(
             (u) => u.email.toLowerCase() == email.trim().toLowerCase(),
@@ -119,7 +106,6 @@ class AuthProvider extends ChangeNotifier {
         return false;
       }
 
-      // Étape 2 : créer le nouvel utilisateur avec UUID
       final User newUser = User(
         id: const Uuid().v4(),
         name: name.trim(),
@@ -128,10 +114,8 @@ class AuthProvider extends ChangeNotifier {
         createdAt: DateTime.now(),
       );
 
-      // Étape 3 : ajouter à la liste
       await StorageService.instance.addUser(newUser);
 
-      // Étape 4 : définir comme utilisateur courant
       await StorageService.instance.saveCurrentUser(newUser);
       _currentUser = newUser;
       return true;
@@ -170,7 +154,6 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // Vérifier que le nouvel email n'est pas déjà utilisé
       if (email != null &&
           email.trim().toLowerCase() != _currentUser!.email.toLowerCase()) {
         final List<User> users = StorageService.instance.getUsers();

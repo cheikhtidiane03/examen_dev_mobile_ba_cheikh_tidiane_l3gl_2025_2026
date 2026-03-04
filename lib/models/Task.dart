@@ -1,22 +1,14 @@
-// lib/models/task.dart
-
-/**
- * Les modeles sont immutables(final) pour éviter les
- * modifications et faciliter la gestion d'etat
- */
-
 /// Statut possible d'une tâche
 enum TaskStatus {
-  todo,       // À faire
-  inProgress, // En cours
-  done,       // Terminée
+  todo,
+  inProgress,
+  done,
 }
 
-/// Priorité possible d'une tâche
 enum TaskPriority {
-  low,    // Basse
-  medium, // Moyenne
-  high,   // Haute
+  low,
+  medium,
+  high,
 }
 
 /**
@@ -80,10 +72,9 @@ extension TaskPriorityExtension on TaskPriority {
 }
 
 class Task {
-  /// Identifiant unique de la tâche (UUID)
+
   final String id;
 
-  /// ID du projet parent (lien vers Project)
   final String projectId;
 
   final String title;
@@ -94,14 +85,12 @@ class Task {
 
   final TaskPriority priority;
 
-  /// Date d'échéance (optionnelle)
   final DateTime? dueDate;
 
   final DateTime createdAt;
 
   final DateTime updatedAt;
 
-  /// Constructeur
   Task({
     required this.id,
     required this.projectId,
