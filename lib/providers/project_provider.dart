@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import '../models/Project.dart';
+import '../models/project.dart';
 import '../services/storage_service.dart';
 
 /**

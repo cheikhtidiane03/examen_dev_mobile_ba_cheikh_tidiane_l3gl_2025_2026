@@ -3,8 +3,8 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user.dart';
-import '../models/Project.dart';
-import '../models/Task.dart';
+import '../models/project.dart';
+import '../models/task.dart';
 
 /**
  * Pattern Singleton:
