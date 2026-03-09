@@ -141,30 +141,30 @@ class _HomeScreenState extends State<HomeScreen> {
       // → l'état (scroll, filtres) est préservé entre les changements
       body: IndexedStack(
         index: _currentIndex,
-        // children: [
-        //   DashboardTab(
-        //     authProvider: widget.authProvider,
-        //     projectProvider: widget.projectProvider,
-        //     taskProvider: widget.taskProvider,
-        //     onNavigateToProjects: () => setState(() => _currentIndex = 1),
-        //     onNavigateToTasks: () => setState(() => _currentIndex = 2),
-        //   ),
-        //   ProjectsTab(
-        //     authProvider: widget.authProvider,
-        //     projectProvider: widget.projectProvider,
-        //     taskProvider: widget.taskProvider,
-        //   ),
-        //   TasksTab(
-        //     taskProvider: widget.taskProvider,
-        //     projectProvider: widget.projectProvider,
-        //   ),
-        //   ProfileTab(
-        //     authProvider: widget.authProvider,
-        //     projectProvider: widget.projectProvider,
-        //     taskProvider: widget.taskProvider,
-        //     onLogout: _handleLogout,
-        //   ),
-        // ],
+        children: [
+          DashboardTab(
+            authProvider: widget.authProvider,
+            projectProvider: widget.projectProvider,
+            taskProvider: widget.taskProvider,
+            onNavigateToProjects: () => setState(() => _currentIndex = 1),
+            onNavigateToTasks: () => setState(() => _currentIndex = 2),
+          ),
+          ProjectsTab(
+            authProvider: widget.authProvider,
+            projectProvider: widget.projectProvider,
+            taskProvider: widget.taskProvider,
+          ),
+          TasksTab(
+            taskProvider: widget.taskProvider,
+            projectProvider: widget.projectProvider,
+          ),
+          ProfileTab(
+            authProvider: widget.authProvider,
+            projectProvider: widget.projectProvider,
+            taskProvider: widget.taskProvider,
+            onLogout: _handleLogout,
+          ),
+        ],
       ),
 
       bottomNavigationBar: _buildBottomNavBar(),
