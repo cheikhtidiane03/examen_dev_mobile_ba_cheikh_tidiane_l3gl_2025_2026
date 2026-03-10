@@ -6,6 +6,8 @@ import 'package:sunu_task/core/constants/app_strings.dart';
 import 'package:sunu_task/providers/auth_provider.dart';
 import 'package:sunu_task/providers/project_provider.dart';
 import 'package:sunu_task/providers/task_provider.dart';
+import 'package:sunu_task/screens/projects/project_detail_screen.dart';
+import 'package:sunu_task/screens/projects/project_form_screen.dart';
 import 'package:sunu_task/widgets/cards/project_card.dart';
 
 class ProjectsTab extends StatelessWidget {
@@ -25,7 +27,6 @@ class ProjectsTab extends StatelessWidget {
     return ListenableBuilder(
       listenable: Listenable.merge([projectProvider, taskProvider]),
       builder: (context, _) {
-        // Loader pendant le chargement initial
         if (projectProvider.isLoading) {
           return const Center(
             child: CircularProgressIndicator(
@@ -37,7 +38,7 @@ class ProjectsTab extends StatelessWidget {
         final projects = projectProvider.projects;
 
         if (projects.isEmpty) {
-          return _buildEmptyState();
+          return _buildEmptyState(context);
         }
 
         return ListView.builder(
@@ -52,18 +53,45 @@ class ProjectsTab extends StatelessWidget {
             return ProjectCard(
               project: project,
               taskCount: taskCount,
-              onTap: () {
-                // TODO Partie 5 : ProjectDetailScreen
-              },
-              onEdit: () {
-                // TODO Partie 5 : ProjectFormScreen en mode edition
-              },
+              onTap: () => _goToDetail(context, project),
+              onEdit: () => _goToEdit(context, project),
               onDelete: () =>
                   _confirmDelete(context, project.id, project.name),
             );
           },
         );
       },
+    );
+  }
+
+  // ── Navigation vers le detail du projet ──────────────────────────────────
+
+  void _goToDetail(BuildContext context, project) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ProjectDetailScreen(
+          project: project,
+          authProvider: authProvider,
+          projectProvider: projectProvider,
+          taskProvider: taskProvider,
+        ),
+      ),
+    );
+  }
+
+  // ── Navigation vers le formulaire de modification ─────────────────────────
+
+  void _goToEdit(BuildContext context, project) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ProjectFormScreen(
+          project: project,
+          authProvider: authProvider,
+          projectProvider: projectProvider,
+        ),
+      ),
     );
   }
 
@@ -94,23 +122,17 @@ class ProjectsTab extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text(
-              AppStrings.cancel,
-              style: TextStyle(color: AppColors.textSecondary),
-            ),
+            child: const Text(AppStrings.cancel,
+                style: TextStyle(color: AppColors.textSecondary)),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(ctx);
               projectProvider.deleteProject(projectId);
             },
-            child: const Text(
-              AppStrings.delete,
-              style: TextStyle(
-                color: AppColors.error,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+            child: const Text(AppStrings.delete,
+                style: TextStyle(
+                    color: AppColors.error, fontWeight: FontWeight.w600)),
           ),
         ],
       ),
@@ -119,7 +141,7 @@ class ProjectsTab extends StatelessWidget {
 
   // ── Etat vide ─────────────────────────────────────────────────────────────
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(BuildContext context) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(40),
@@ -133,11 +155,8 @@ class ProjectsTab extends StatelessWidget {
                 color: AppColors.primary.withValues(alpha: 0.08),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
-                Icons.folder_open_rounded,
-                size: 50,
-                color: AppColors.primary,
-              ),
+              child: const Icon(Icons.folder_open_rounded,
+                  size: 50, color: AppColors.primary),
             ),
             const SizedBox(height: 24),
             const Text(
@@ -156,6 +175,29 @@ class ProjectsTab extends StatelessWidget {
                 fontSize: 14,
                 color: AppColors.textSecondary,
                 height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ProjectFormScreen(
+                    authProvider: authProvider,
+                    projectProvider: projectProvider,
+                  ),
+                ),
+              ),
+              icon: const Icon(Icons.add_rounded),
+              label: const Text(AppStrings.newProject),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: AppColors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 24, vertical: 12),
               ),
             ),
           ],

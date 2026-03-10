@@ -11,6 +11,7 @@ import 'package:sunu_task/screens/home/tabs/dashboard_tab.dart';
 import 'package:sunu_task/screens/home/tabs/profile_tab.dart';
 import 'package:sunu_task/screens/home/tabs/projects_tab.dart';
 import 'package:sunu_task/screens/home/tabs/tasks_tab.dart';
+import 'package:sunu_task/screens/projects/project_form_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final AuthProvider authProvider;
@@ -53,49 +54,36 @@ class _HomeScreenState extends State<HomeScreen> {
     Icons.person_rounded,
   ];
 
-  // FAB visible uniquement sur Dashboard (0) et Projets (1)
   bool get _showFab => _currentIndex == 0 || _currentIndex == 1;
 
   // ── Déconnexion ──────────────────────────────────────────────────────────
 
   Future<void> _handleLogout() async {
-    // Fermer le Drawer si ouvert
     if (Navigator.canPop(context)) Navigator.pop(context);
 
     final bool? confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        title: const Text(
-          'Deconnexion',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
-        ),
-        content: const Text(
-          'Voulez-vous vraiment vous deconnecter ?',
-          style: TextStyle(color: AppColors.textSecondary),
-        ),
+            borderRadius: BorderRadius.circular(16)),
+        title: const Text('Deconnexion',
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary)),
+        content: const Text('Voulez-vous vraiment vous deconnecter ?',
+            style: TextStyle(color: AppColors.textSecondary)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text(
-              AppStrings.cancel,
-              style: TextStyle(color: AppColors.textSecondary),
-            ),
+            child: const Text(AppStrings.cancel,
+                style: TextStyle(color: AppColors.textSecondary)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text(
-              AppStrings.logout,
-              style: TextStyle(
-                color: AppColors.error,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+            child: const Text(AppStrings.logout,
+                style: TextStyle(
+                    color: AppColors.error,
+                    fontWeight: FontWeight.w600)),
           ),
         ],
       ),
@@ -123,8 +111,25 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _navigateToTab(int index) {
-    Navigator.pop(context); // Fermer le Drawer
+    Navigator.pop(context);
     setState(() => _currentIndex = index);
+  }
+
+  // ── FAB : ouvrir ProjectFormScreen ────────────────────────────────────────
+
+  void _openProjectForm() {
+    // Si on est sur Dashboard, passer d'abord sur l'onglet Projets
+    if (_currentIndex == 0) setState(() => _currentIndex = 1);
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ProjectFormScreen(
+          authProvider: widget.authProvider,
+          projectProvider: widget.projectProvider,
+        ),
+      ),
+    );
   }
 
   // ── Build ────────────────────────────────────────────────────────────────
@@ -136,9 +141,6 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: AppColors.background,
       appBar: _buildAppBar(),
       drawer: _buildDrawer(),
-
-      // IndexedStack : garde tous les onglets en mémoire
-      // → l'état (scroll, filtres) est préservé entre les changements
       body: IndexedStack(
         index: _currentIndex,
         children: [
@@ -146,7 +148,8 @@ class _HomeScreenState extends State<HomeScreen> {
             authProvider: widget.authProvider,
             projectProvider: widget.projectProvider,
             taskProvider: widget.taskProvider,
-            onNavigateToProjects: () => setState(() => _currentIndex = 1),
+            onNavigateToProjects: () =>
+                setState(() => _currentIndex = 1),
             onNavigateToTasks: () => setState(() => _currentIndex = 2),
           ),
           ProjectsTab(
@@ -166,13 +169,10 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-
       bottomNavigationBar: _buildBottomNavBar(),
       floatingActionButton: _showFab ? _buildFab() : null,
     );
   }
-
-  // ── AppBar ───────────────────────────────────────────────────────────────
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
@@ -202,19 +202,18 @@ class _HomeScreenState extends State<HomeScreen> {
               final initial =
               name.isNotEmpty ? name[0].toUpperCase() : '?';
               return GestureDetector(
-                onTap: () => _scaffoldKey.currentState?.openDrawer(),
+                onTap: () =>
+                    _scaffoldKey.currentState?.openDrawer(),
                 child: CircleAvatar(
                   radius: 18,
                   backgroundColor:
                   AppColors.primary.withValues(alpha: 0.15),
-                  child: Text(
-                    initial,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primary,
-                      fontSize: 15,
-                    ),
-                  ),
+                  child: Text(initial,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primary,
+                        fontSize: 15,
+                      )),
                 ),
               );
             },
@@ -223,8 +222,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ],
     );
   }
-
-  // ── Drawer ───────────────────────────────────────────────────────────────
 
   Widget _buildDrawer() {
     return Drawer(
@@ -246,21 +243,14 @@ class _HomeScreenState extends State<HomeScreen> {
               child: ListTile(
                 onTap: _handleLogout,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                leading: const Icon(
-                  Icons.logout_rounded,
-                  color: AppColors.error,
-                  size: 22,
-                ),
-                title: const Text(
-                  AppStrings.logout,
-                  style: TextStyle(
-                    color: AppColors.error,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 15,
-                  ),
-                ),
+                    borderRadius: BorderRadius.circular(12)),
+                leading: const Icon(Icons.logout_rounded,
+                    color: AppColors.error, size: 22),
+                title: const Text(AppStrings.logout,
+                    style: TextStyle(
+                        color: AppColors.error,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 15)),
               ),
             ),
           ],
@@ -287,40 +277,34 @@ class _HomeScreenState extends State<HomeScreen> {
                 radius: 30,
                 backgroundColor:
                 AppColors.primary.withValues(alpha: 0.15),
-                child: Text(
-                  initial,
-                  style: const TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primary,
-                  ),
-                ),
+                child: Text(initial,
+                    style: const TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primary,
+                    )),
               ),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      name,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                    Text(name,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis),
                     const SizedBox(height: 3),
-                    Text(
-                      email,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: AppColors.textSecondary,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                    Text(email,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: AppColors.textSecondary,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis),
                   ],
                 ),
               ),
@@ -338,32 +322,27 @@ class _HomeScreenState extends State<HomeScreen> {
       child: ListTile(
         onTap: () => _navigateToTab(index),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+            borderRadius: BorderRadius.circular(12)),
         tileColor: isActive
             ? AppColors.primary.withValues(alpha: 0.1)
             : Colors.transparent,
         leading: Icon(
           isActive ? _iconsActive[index] : _icons[index],
-          color:
-          isActive ? AppColors.primary : AppColors.textSecondary,
+          color: isActive ? AppColors.primary : AppColors.textSecondary,
           size: 22,
         ),
-        title: Text(
-          label,
-          style: TextStyle(
-            color:
-            isActive ? AppColors.primary : AppColors.textSecondary,
-            fontWeight:
-            isActive ? FontWeight.w600 : FontWeight.normal,
-            fontSize: 15,
-          ),
-        ),
+        title: Text(label,
+            style: TextStyle(
+              color: isActive
+                  ? AppColors.primary
+                  : AppColors.textSecondary,
+              fontWeight:
+              isActive ? FontWeight.w600 : FontWeight.normal,
+              fontSize: 15,
+            )),
       ),
     );
   }
-
-  // ── BottomNavigationBar ───────────────────────────────────────────────────
 
   Widget _buildBottomNavBar() {
     return Container(
@@ -380,9 +359,7 @@ class _HomeScreenState extends State<HomeScreen> {
         selectedItemColor: AppColors.primary,
         unselectedItemColor: AppColors.textSecondary,
         selectedLabelStyle: const TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: 11,
-        ),
+            fontWeight: FontWeight.w600, fontSize: 11),
         unselectedLabelStyle: const TextStyle(fontSize: 11),
         elevation: 0,
         items: List.generate(
@@ -397,23 +374,15 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // ── FAB ───────────────────────────────────────────────────────────────────
-
   Widget _buildFab() {
     return FloatingActionButton.extended(
-      onPressed: () {
-        // Depuis Dashboard → aller sur l'onglet Projets
-        if (_currentIndex == 0) setState(() => _currentIndex = 1);
-        // TODO Partie 5 : ouvrir ProjectFormScreen
-      },
+      onPressed: _openProjectForm,
       backgroundColor: AppColors.primary,
       foregroundColor: AppColors.white,
       elevation: 2,
       icon: const Icon(Icons.add_rounded, size: 22),
-      label: const Text(
-        AppStrings.newProject,
-        style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-      ),
+      label: const Text(AppStrings.newProject,
+          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
     );
   }
 }
