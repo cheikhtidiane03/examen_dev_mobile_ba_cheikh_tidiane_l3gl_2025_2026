@@ -1,5 +1,3 @@
-// lib/screens/projects/project_form_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:sunu_task/core/constants/app_colors.dart';
 import 'package:sunu_task/core/constants/app_strings.dart';
@@ -32,16 +30,7 @@ class _ProjectFormScreenState extends State<ProjectFormScreen> {
   late final TextEditingController _descController;
   late int _selectedColor;
 
-  static const List<int> _projectColors = [
-    0xFF4F7AF8,
-    0xFF10B981,
-    0xFFF59E0B,
-    0xFFEF4444,
-    0xFF8B5CF6,
-    0xFF06B6D4,
-    0xFFEC4899,
-    0xFF6B7280,
-  ];
+  static List<int> get _projectColors => AppColors.projectColorValues;
 
   bool get _isEditing => widget.project != null;
 
