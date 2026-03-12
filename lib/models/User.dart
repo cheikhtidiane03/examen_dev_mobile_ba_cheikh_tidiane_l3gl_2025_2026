@@ -1,14 +1,11 @@
-// lib/models/user.dart
-
 /**
  * Les modeles sont immutables(final) pour éviter les
  * modifications et faciliter la gestion d'etat
  */
 class User {
-  /// Identifiant unique de l'utilisateur (UUID)
+
   final String id;
 
-  /// Nom complet de l'utilisateur
   final String name;
 
   final String email;
@@ -62,7 +59,7 @@ class User {
       'email': email,
       'password': password,
       'avatar': avatar,
-      'createdAt': createdAt.toIso8601String(), // ✅ CORRIGÉ : DateTime → String JSON
+      'createdAt': createdAt.toIso8601String(),
     };
   }
 
@@ -75,7 +72,7 @@ class User {
       name: map['name'] as String,
       email: map['email'] as String,
       password: map['password'] as String,
-      avatar: map['avatar'] as String?,    // ✅ CORRIGÉ : String? (nullable)
+      avatar: map['avatar'] as String?,
       createdAt: DateTime.parse(map['createdAt'] as String),
     );
   }
