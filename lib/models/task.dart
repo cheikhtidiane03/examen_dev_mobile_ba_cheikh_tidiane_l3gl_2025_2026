@@ -1,4 +1,3 @@
-/// Statut possible d'une tâche
 enum TaskStatus {
   todo,
   inProgress,
