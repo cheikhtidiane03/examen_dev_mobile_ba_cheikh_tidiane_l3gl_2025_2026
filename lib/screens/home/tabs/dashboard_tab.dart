@@ -25,8 +25,6 @@ class DashboardTab extends StatelessWidget {
     this.onNavigateToTasks,
   });
 
-  // ── Message selon l'heure ────────────────────────────────────────────────
-  // Bonjour (5h-12h) / Bon après-midi (12h-18h) / Bonsoir (18h-5h)
   String _getGreeting() {
     final int hour = DateTime.now().hour;
     if (hour >= 5 && hour < 12) return 'Bonjour';
@@ -34,12 +32,10 @@ class DashboardTab extends StatelessWidget {
     return 'Bonsoir';
   }
 
-  // ── Rafraîchissement des données ─────────────────────────────────────────
   Future<void> _onRefresh() async {
     final userId = authProvider.currentUser?.id;
     if (userId == null) return;
     await projectProvider.loadProjects(userId);
-    // Recharger les taches de tous les projets
     for (final project in projectProvider.projects) {
       await taskProvider.loadTasks(project.id);
     }
@@ -65,18 +61,14 @@ class DashboardTab extends StatelessWidget {
           onRefresh: _onRefresh,
           color: AppColors.primary,
           child: SingleChildScrollView(
-            // physics necessaire pour que RefreshIndicator fonctionne
-            // meme quand le contenu est plus court que l'ecran
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ── Bannière de bienvenue ──────────────────────────────
                 _buildWelcomeBanner(firstName),
                 const SizedBox(height: 24),
 
-                // ── Statistiques projets + taches ──────────────────────
                 _buildSectionTitle('Apercu'),
                 const SizedBox(height: 12),
                 _buildOverviewRow(
@@ -85,19 +77,20 @@ class DashboardTab extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
 
-                // ── Statistiques taches par statut ─────────────────────
                 _buildSectionTitle('Taches par statut'),
                 const SizedBox(height: 12),
                 _buildStatusStatsRow(stats),
                 const SizedBox(height: 28),
 
-                // ── Projets recents ────────────────────────────────────
+                // ── Titre + bouton "Voir tout" ─────────────────────────
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     _buildSectionTitle('Projets recents'),
-                    if (projects.isNotEmpty)
-                      TextButton(
+                    // "Voir tout" via Visibility
+                    Visibility(
+                      visible: projects.isNotEmpty,
+                      child: TextButton(
                         onPressed: onNavigateToProjects,
                         child: const Text(
                           'Voir tout',
@@ -108,12 +101,15 @@ class DashboardTab extends StatelessWidget {
                           ),
                         ),
                       ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 8),
 
-                if (projectProvider.isLoading)
-                  const Center(
+                // ── Loader via Visibility ──────────────────────────────
+                Visibility(
+                  visible: projectProvider.isLoading,
+                  child: const Center(
                     child: Padding(
                       padding: EdgeInsets.all(32),
                       child: CircularProgressIndicator(
@@ -121,27 +117,32 @@ class DashboardTab extends StatelessWidget {
                         AlwaysStoppedAnimation(AppColors.primary),
                       ),
                     ),
-                  )
-                else if (projects.isEmpty)
-                  _buildEmptyProjects()
-                else
-                // ProjectCard sans marges horizontales supplementaires
-                // (la carte a deja ses propres marges)
-                  Column(
+                  ),
+                ),
+
+                // ── Etat vide via Visibility ───────────────────────────
+                Visibility(
+                  visible: !projectProvider.isLoading && projects.isEmpty,
+                  child: _buildEmptyProjects(),
+                ),
+
+                // ── Liste projets recents via Visibility ───────────────
+                Visibility(
+                  visible:
+                  !projectProvider.isLoading && projects.isNotEmpty,
+                  child: Column(
                     children: recentProjects.map((project) {
                       final count = taskProvider.allTasks
                           .where((t) => t.projectId == project.id)
                           .length;
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 0),
-                        child: ProjectCard(
-                          project: project,
-                          taskCount: count,
-                          onTap: onNavigateToProjects,
-                        ),
+                      return ProjectCard(
+                        project: project,
+                        taskCount: count,
+                        onTap: onNavigateToProjects,
                       );
                     }).toList(),
                   ),
+                ),
               ],
             ),
           ),
@@ -149,8 +150,6 @@ class DashboardTab extends StatelessWidget {
       },
     );
   }
-
-  // ── Bannière de bienvenue ─────────────────────────────────────────────────
 
   Widget _buildWelcomeBanner(String firstName) {
     return Container(
@@ -195,8 +194,6 @@ class DashboardTab extends StatelessWidget {
     );
   }
 
-  // ── Titre de section ──────────────────────────────────────────────────────
-
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
@@ -207,8 +204,6 @@ class DashboardTab extends StatelessWidget {
       ),
     );
   }
-
-  // ── Ligne d'aperçu : projets + taches total ───────────────────────────────
 
   Widget _buildOverviewRow({
     required int projectCount,
@@ -236,8 +231,6 @@ class DashboardTab extends StatelessWidget {
       ],
     );
   }
-
-  // ── Ligne de stats par statut (3 cartes) ──────────────────────────────────
 
   Widget _buildStatusStatsRow(Map<TaskStatus, int> stats) {
     return Row(
@@ -272,13 +265,10 @@ class DashboardTab extends StatelessWidget {
     );
   }
 
-  // ── Etat vide ─────────────────────────────────────────────────────────────
-
   Widget _buildEmptyProjects() {
     return Container(
       width: double.infinity,
-      padding:
-      const EdgeInsets.symmetric(vertical: 40, horizontal: 24),
+      padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 24),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
@@ -286,11 +276,8 @@ class DashboardTab extends StatelessWidget {
       ),
       child: const Column(
         children: [
-          Icon(
-            Icons.folder_open_rounded,
-            size: 48,
-            color: AppColors.textDisable,
-          ),
+          Icon(Icons.folder_open_rounded,
+              size: 48, color: AppColors.textDisable),
           SizedBox(height: 12),
           Text(
             AppStrings.noProjects,
@@ -304,18 +291,13 @@ class DashboardTab extends StatelessWidget {
           Text(
             AppStrings.noProjectsDesc,
             textAlign: TextAlign.center,
-            style: TextStyle(
-              color: AppColors.textSecondary,
-              fontSize: 13,
-            ),
+            style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
           ),
         ],
       ),
     );
   }
 }
-
-// ── Carte d'aperçu (projets / taches total) ──────────────────────────────────
 
 class _OverviewCard extends StatelessWidget {
   final IconData icon;
@@ -354,21 +336,14 @@ class _OverviewCard extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                '$count',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: color,
-                ),
-              ),
-              Text(
-                label,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: AppColors.textSecondary,
-                ),
-              ),
+              Text('$count',
+                  style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: color)),
+              Text(label,
+                  style: const TextStyle(
+                      fontSize: 12, color: AppColors.textSecondary)),
             ],
           ),
         ],
@@ -376,8 +351,6 @@ class _OverviewCard extends StatelessWidget {
     );
   }
 }
-
-// ── Carte de statut ──────────────────────────────────────────────────────────
 
 class _StatCard extends StatelessWidget {
   final String label;
@@ -405,25 +378,19 @@ class _StatCard extends StatelessWidget {
         children: [
           Icon(icon, color: color, size: 22),
           const SizedBox(height: 8),
-          Text(
-            '$count',
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: color,
-            ),
-          ),
+          Text('$count',
+              style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: color)),
           const SizedBox(height: 4),
-          Text(
-            label,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 10,
-              color: AppColors.textSecondary,
-              fontWeight: FontWeight.w500,
-            ),
-            maxLines: 2,
-          ),
+          Text(label,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                  fontSize: 10,
+                  color: AppColors.textSecondary,
+                  fontWeight: FontWeight.w500),
+              maxLines: 2),
         ],
       ),
     );

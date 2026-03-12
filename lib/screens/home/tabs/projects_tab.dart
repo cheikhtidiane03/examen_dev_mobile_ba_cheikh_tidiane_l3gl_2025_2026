@@ -27,44 +27,47 @@ class ProjectsTab extends StatelessWidget {
     return ListenableBuilder(
       listenable: Listenable.merge([projectProvider, taskProvider]),
       builder: (context, _) {
-        if (projectProvider.isLoading) {
-          return const Center(
+        // Loader via Visibility
+        return Visibility(
+          visible: projectProvider.isLoading,
+          replacement: _buildContent(context),
+          child: const Center(
             child: CircularProgressIndicator(
               valueColor: AlwaysStoppedAnimation(AppColors.primary),
             ),
-          );
-        }
-
-        final projects = projectProvider.projects;
-
-        if (projects.isEmpty) {
-          return _buildEmptyState(context);
-        }
-
-        return ListView.builder(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          itemCount: projects.length,
-          itemBuilder: (context, index) {
-            final project = projects[index];
-            final taskCount = taskProvider.allTasks
-                .where((t) => t.projectId == project.id)
-                .length;
-
-            return ProjectCard(
-              project: project,
-              taskCount: taskCount,
-              onTap: () => _goToDetail(context, project),
-              onEdit: () => _goToEdit(context, project),
-              onDelete: () =>
-                  _confirmDelete(context, project.id, project.name),
-            );
-          },
+          ),
         );
       },
     );
   }
 
-  // ── Navigation vers le detail du projet ──────────────────────────────────
+  Widget _buildContent(BuildContext context) {
+    final projects = projectProvider.projects;
+
+    // Etat vide via Visibility
+    return Visibility(
+      visible: projects.isEmpty,
+      replacement: ListView.builder(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        itemCount: projects.length,
+        itemBuilder: (context, index) {
+          final project = projects[index];
+          final taskCount = taskProvider.allTasks
+              .where((t) => t.projectId == project.id)
+              .length;
+          return ProjectCard(
+            project: project,
+            taskCount: taskCount,
+            onTap: () => _goToDetail(context, project),
+            onEdit: () => _goToEdit(context, project),
+            onDelete: () =>
+                _confirmDelete(context, project.id, project.name),
+          );
+        },
+      ),
+      child: _buildEmptyState(context),
+    );
+  }
 
   void _goToDetail(BuildContext context, project) {
     Navigator.push(
@@ -80,8 +83,6 @@ class ProjectsTab extends StatelessWidget {
     );
   }
 
-  // ── Navigation vers le formulaire de modification ─────────────────────────
-
   void _goToEdit(BuildContext context, project) {
     Navigator.push(
       context,
@@ -95,8 +96,6 @@ class ProjectsTab extends StatelessWidget {
     );
   }
 
-  // ── Dialog de confirmation de suppression ─────────────────────────────────
-
   void _confirmDelete(
       BuildContext context,
       String projectId,
@@ -106,15 +105,11 @@ class ProjectsTab extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        title: const Text(
-          AppStrings.deleteProject,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
-        ),
+            borderRadius: BorderRadius.circular(16)),
+        title: const Text(AppStrings.deleteProject,
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary)),
         content: Text(
           'Supprimer "$projectName" ?\nCette action supprimera aussi toutes ses taches.',
           style: const TextStyle(color: AppColors.textSecondary),
@@ -132,14 +127,13 @@ class ProjectsTab extends StatelessWidget {
             },
             child: const Text(AppStrings.delete,
                 style: TextStyle(
-                    color: AppColors.error, fontWeight: FontWeight.w600)),
+                    color: AppColors.error,
+                    fontWeight: FontWeight.w600)),
           ),
         ],
       ),
     );
   }
-
-  // ── Etat vide ─────────────────────────────────────────────────────────────
 
   Widget _buildEmptyState(BuildContext context) {
     return Center(
@@ -159,24 +153,18 @@ class ProjectsTab extends StatelessWidget {
                   size: 50, color: AppColors.primary),
             ),
             const SizedBox(height: 24),
-            const Text(
-              AppStrings.noProjects,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
-            ),
+            const Text(AppStrings.noProjects,
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary)),
             const SizedBox(height: 8),
-            const Text(
-              AppStrings.noProjectsDesc,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-                height: 1.5,
-              ),
-            ),
+            const Text(AppStrings.noProjectsDesc,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: 14,
+                    color: AppColors.textSecondary,
+                    height: 1.5)),
             const SizedBox(height: 24),
             ElevatedButton.icon(
               onPressed: () => Navigator.push(
@@ -194,8 +182,7 @@ class ProjectsTab extends StatelessWidget {
                 backgroundColor: AppColors.primary,
                 foregroundColor: AppColors.white,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
+                    borderRadius: BorderRadius.circular(12)),
                 padding: const EdgeInsets.symmetric(
                     horizontal: 24, vertical: 12),
               ),

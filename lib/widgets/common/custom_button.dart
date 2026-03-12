@@ -10,7 +10,7 @@ import '../../core/constants/app_colors.dart';
  *
  * Supporte :
  * - État de chargement (isLoading) → affiche CircularProgressIndicator
- * - Icône optionnelle à gauche du texte
+ * - Icône optionnelle à gauche du texte via Visibility
  * - Largeur, hauteur et couleur personnalisables
  */
 class CustomButton extends StatelessWidget {
@@ -37,19 +37,17 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Couleur effective : paramètre fourni OU couleur primaire de l'app
     final Color effectiveColor = color ?? AppColors.primary;
 
-    // Contenu du bouton : loader OU (icône +) texte
-    Widget child = isLoading
+    // Contenu : loader OU icône + texte
+    // Visibility remplace if (icon != null)
+    final Widget child = isLoading
         ? SizedBox(
       width: 22,
       height: 22,
       child: CircularProgressIndicator(
         strokeWidth: 2.5,
         valueColor: AlwaysStoppedAnimation<Color>(
-          // Blanc sur fond coloré (ElevatedButton)
-          // Coloré sur fond blanc (OutlinedButton)
           isOutlined ? effectiveColor : AppColors.white,
         ),
       ),
@@ -58,16 +56,23 @@ class CustomButton extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        if (icon != null) ...[
-          Icon(icon, size: 18),
-          const SizedBox(width: 8),
-        ],
+        // Icône via Visibility
+        Visibility(
+          visible: icon != null,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon ?? Icons.check, size: 18),
+              const SizedBox(width: 8),
+            ],
+          ),
+        ),
         Text(text),
       ],
     );
 
-    // Désactiver le bouton pendant le chargement
-    final VoidCallback? effectiveOnPressed = isLoading ? null : onPressed;
+    final VoidCallback? effectiveOnPressed =
+    isLoading ? null : onPressed;
 
     if (isOutlined) {
       return SizedBox(

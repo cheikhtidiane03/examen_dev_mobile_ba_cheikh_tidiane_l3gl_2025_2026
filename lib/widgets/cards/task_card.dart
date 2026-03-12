@@ -11,19 +11,13 @@ import '../../models/task.dart';
  * Contient :
  * - Barre de priorité colorée (côté gauche)
  * - Titre (barré + grisé si done)
- * - Description (si présente)
- * - Badge de statut coloré (AppColors.statusTodo/InProgress/Done)
- * - Chip de priorité (icône + couleur AppColors.priorityLow/Medium/High)
- * - Date d'échéance (rouge si task.isOverdue, sinon gris)
- * - Callback onTap pour la navigation
- *
- * Utilise AppColors pour toutes les couleurs
- * Utilise AppStrings pour tous les libellés de statut et priorité
+ * - Description (si présente) via Visibility
+ * - Badge de statut coloré
+ * - Chip de priorité
+ * - Date d'échéance via Visibility (rouge si isOverdue)
  */
 class TaskCard extends StatelessWidget {
   final Task task;
-
-  /// Navigation vers TaskDetailScreen
   final VoidCallback? onTap;
 
   const TaskCard({
@@ -46,11 +40,9 @@ class TaskCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(14),
         child: IntrinsicHeight(
-          // IntrinsicHeight force la barre colorée à prendre
-          // la hauteur totale de la carte
           child: Row(
             children: [
-              // ── Barre de priorité (côté gauche) ─────────────────────────
+              // ── Barre de priorité ─────────────────────────────────────────
               Container(
                 width: 5,
                 decoration: BoxDecoration(
@@ -62,7 +54,7 @@ class TaskCard extends StatelessWidget {
                 ),
               ),
 
-              // ── Contenu principal ────────────────────────────────────────
+              // ── Contenu ───────────────────────────────────────────────────
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(14),
@@ -79,11 +71,9 @@ class TaskCard extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                // Grisé si tâche terminée
                                 color: task.status == TaskStatus.done
                                     ? AppColors.textDisable
                                     : AppColors.textPrimary,
-                                // Barré si tâche terminée
                                 decoration: task.status == TaskStatus.done
                                     ? TextDecoration.lineThrough
                                     : null,
@@ -98,20 +88,23 @@ class TaskCard extends StatelessWidget {
                         ],
                       ),
 
-                      // Ligne 2 : Description (si présente)
-                      if (task.description != null &&
-                          task.description!.isNotEmpty) ...[
-                        const SizedBox(height: 5),
-                        Text(
-                          task.description!,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: AppColors.textSecondary,
+                      // Ligne 2 : Description via Visibility
+                      Visibility(
+                        visible: task.description != null &&
+                            task.description!.isNotEmpty,
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 5),
+                          child: Text(
+                            task.description ?? '',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: AppColors.textSecondary,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
                         ),
-                      ],
+                      ),
 
                       const SizedBox(height: 10),
 
@@ -120,9 +113,11 @@ class TaskCard extends StatelessWidget {
                         children: [
                           _PriorityChip(priority: task.priority),
                           const Spacer(),
-                          // Afficher la date seulement si dueDate est définie
-                          if (task.dueDate != null)
-                            _DueDateChip(task: task),
+                          // Date d'échéance via Visibility
+                          Visibility(
+                            visible: task.dueDate != null,
+                            child: _DueDateChip(task: task),
+                          ),
                         ],
                       ),
                     ],
@@ -136,7 +131,6 @@ class TaskCard extends StatelessWidget {
     );
   }
 
-  /// Couleur de la barre latérale selon la priorité (AppColors)
   Color _priorityColor(TaskPriority priority) {
     switch (priority) {
       case TaskPriority.high:   return AppColors.priorityHigh;
@@ -146,27 +140,20 @@ class TaskCard extends StatelessWidget {
   }
 }
 
-// ════════════════════════════════════════════════════════════════════════════
-//  Widget interne : Badge de statut
-//  Utilise AppColors.statusTodo/InProgress/Done
-//  Utilise AppStrings.statusTodo/InProgress/Done
-// ════════════════════════════════════════════════════════════════════════════
+// ── Badge de statut ───────────────────────────────────────────────────────────
 
 class _StatusBadge extends StatelessWidget {
   final TaskStatus status;
-
   const _StatusBadge({required this.status});
 
-  /// Libellé depuis AppStrings
   String get _label {
     switch (status) {
-      case TaskStatus.todo:       return AppStrings.statusTodo;       // 'A faire'
-      case TaskStatus.inProgress: return AppStrings.statusInProgress; // 'En cours'
-      case TaskStatus.done:       return AppStrings.statusDone;       // 'Termine'
+      case TaskStatus.todo:       return AppStrings.statusTodo;
+      case TaskStatus.inProgress: return AppStrings.statusInProgress;
+      case TaskStatus.done:       return AppStrings.statusDone;
     }
   }
 
-  /// Couleur depuis AppColors
   Color get _color {
     switch (status) {
       case TaskStatus.todo:       return AppColors.statusTodo;
@@ -180,12 +167,9 @@ class _StatusBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: _color.withOpacity(0.12),
+        color: _color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: _color.withOpacity(0.35),
-          width: 1,
-        ),
+        border: Border.all(color: _color.withValues(alpha: 0.35)),
       ),
       child: Text(
         _label,
@@ -199,27 +183,20 @@ class _StatusBadge extends StatelessWidget {
   }
 }
 
-// ════════════════════════════════════════════════════════════════════════════
-//  Widget interne : Chip de priorité
-//  Utilise AppColors.priorityHigh/Medium/Low
-//  Utilise AppStrings.priorityHigh/Medium/Low
-// ════════════════════════════════════════════════════════════════════════════
+// ── Chip de priorité ─────────────────────────────────────────────────────────
 
 class _PriorityChip extends StatelessWidget {
   final TaskPriority priority;
-
   const _PriorityChip({required this.priority});
 
-  /// Libellé depuis AppStrings
   String get _label {
     switch (priority) {
-      case TaskPriority.high:   return AppStrings.priorityHigh;   // 'Haute'
-      case TaskPriority.medium: return AppStrings.priorityMedium; // 'Moyenne'
-      case TaskPriority.low:    return AppStrings.priorityLow;    // 'Basse'
+      case TaskPriority.high:   return AppStrings.priorityHigh;
+      case TaskPriority.medium: return AppStrings.priorityMedium;
+      case TaskPriority.low:    return AppStrings.priorityLow;
     }
   }
 
-  /// Icône selon la priorité
   IconData get _icon {
     switch (priority) {
       case TaskPriority.high:   return Icons.keyboard_double_arrow_up;
@@ -228,7 +205,6 @@ class _PriorityChip extends StatelessWidget {
     }
   }
 
-  /// Couleur depuis AppColors
   Color get _color {
     switch (priority) {
       case TaskPriority.high:   return AppColors.priorityHigh;
@@ -257,27 +233,17 @@ class _PriorityChip extends StatelessWidget {
   }
 }
 
-// ════════════════════════════════════════════════════════════════════════════
-//  Widget interne : Date d'échéance
-//  Utilise task.isOverdue (getter du modèle Task)
-//  Utilise AppColors.error si dépassée, AppColors.textSecondary sinon
-// ════════════════════════════════════════════════════════════════════════════
+// ── Date d'échéance ───────────────────────────────────────────────────────────
 
 class _DueDateChip extends StatelessWidget {
   final Task task;
-
   const _DueDateChip({required this.task});
 
   @override
   Widget build(BuildContext context) {
-    // task.isOverdue : getter du modèle Task
-    // Retourne true si dueDate est dépassée ET status != done
     final bool overdue = task.isOverdue;
-
     final Color color =
     overdue ? AppColors.error : AppColors.textSecondary;
-
-    // Formatage JJ/MM/AAAA
     final DateTime date = task.dueDate!;
     final String formatted =
         '${date.day.toString().padLeft(2, '0')}/'

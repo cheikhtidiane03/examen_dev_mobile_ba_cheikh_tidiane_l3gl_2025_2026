@@ -14,23 +14,12 @@ import '../../models/project.dart';
  * - Nombre de tâches
  * - Menu contextuel via PopupMenuButton (Modifier / Supprimer)
  * - Callback onTap pour la navigation
- *
- * Utilise AppColors pour toutes les couleurs
- * Utilise AppStrings pour tous les textes (edit, delete, tasks...)
  */
 class ProjectCard extends StatelessWidget {
   final Project project;
-
-  /// Nombre de tâches du projet (calculé dans le parent via TaskProvider)
   final int taskCount;
-
-  /// Navigation vers ProjectDetailScreen
   final VoidCallback? onTap;
-
-  /// Ouvre ProjectFormScreen en mode modification
   final VoidCallback? onEdit;
-
-  /// Demande confirmation puis supprime
   final VoidCallback? onDelete;
 
   const ProjectCard({
@@ -60,12 +49,11 @@ class ProjectCard extends StatelessWidget {
           child: Row(
             children: [
               // ── Pastille de couleur ──────────────────────────────────────
-              // project.projectColor utilise le getter Color(color) du modèle
               Container(
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: project.projectColor.withOpacity(0.15),
+                  color: project.projectColor.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Center(
@@ -86,7 +74,6 @@ class ProjectCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Nom du projet
                     Text(
                       project.name,
                       style: const TextStyle(
@@ -98,24 +85,26 @@ class ProjectCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
 
-                    // Description (seulement si non null et non vide)
-                    if (project.description != null &&
-                        project.description!.isNotEmpty) ...[
-                      const SizedBox(height: 3),
-                      Text(
-                        project.description!,
-                        style: const TextStyle(
-                          fontSize: 13,
-                          color: AppColors.textSecondary,
+                    // Description : Visibility remplace if
+                    Visibility(
+                      visible: project.description != null &&
+                          project.description!.isNotEmpty,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 3),
+                        child: Text(
+                          project.description ?? '',
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: AppColors.textSecondary,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
                       ),
-                    ],
+                    ),
 
                     const SizedBox(height: 8),
 
-                    // Compteur de tâches avec icône
                     Row(
                       children: [
                         const Icon(
@@ -125,8 +114,6 @@ class ProjectCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          // AppStrings.tasks = 'Taches'
-                          // Pluriel manuel : 1 tâche / 5 tâches
                           '$taskCount ${taskCount > 1
                               ? AppStrings.tasks.toLowerCase()
                               : AppStrings.task.toLowerCase()}',
@@ -156,45 +143,30 @@ class ProjectCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 itemBuilder: (BuildContext context) => [
-                  // Option Modifier — AppStrings.edit = 'Modifier'
                   PopupMenuItem<String>(
                     value: 'edit',
                     child: Row(
                       children: [
-                        const Icon(
-                          Icons.edit_outlined,
-                          size: 18,
-                          color: AppColors.primary,
-                        ),
+                        const Icon(Icons.edit_outlined,
+                            size: 18, color: AppColors.primary),
                         const SizedBox(width: 10),
-                        Text(
-                          AppStrings.edit,
-                          style: const TextStyle(
-                            color: AppColors.textPrimary,
-                            fontSize: 14,
-                          ),
-                        ),
+                        Text(AppStrings.edit,
+                            style: const TextStyle(
+                                color: AppColors.textPrimary,
+                                fontSize: 14)),
                       ],
                     ),
                   ),
-                  // Option Supprimer — AppStrings.delete = 'Supprimer'
                   PopupMenuItem<String>(
                     value: 'delete',
                     child: Row(
                       children: [
-                        const Icon(
-                          Icons.delete_outline,
-                          size: 18,
-                          color: AppColors.error,
-                        ),
+                        const Icon(Icons.delete_outline,
+                            size: 18, color: AppColors.error),
                         const SizedBox(width: 10),
-                        Text(
-                          AppStrings.delete,
-                          style: const TextStyle(
-                            color: AppColors.error,
-                            fontSize: 14,
-                          ),
-                        ),
+                        Text(AppStrings.delete,
+                            style: const TextStyle(
+                                color: AppColors.error, fontSize: 14)),
                       ],
                     ),
                   ),

@@ -10,19 +10,12 @@ import '../../core/constants/app_strings.dart';
  * - Centré dans son parent par défaut
  * - Taille, couleur et épaisseur personnalisables
  * - Option fullScreen : overlay semi-transparent sur tout l'écran
- *
- * Utilisation simple :
- *   LoadingIndicator()
- *
- * Plein écran :
- *   LoadingIndicator(fullScreen: true)
+ * - Texte "Chargement..." via Visibility (visible uniquement en fullScreen)
  */
 class LoadingIndicator extends StatelessWidget {
   final double size;
   final Color? color;
   final double strokeWidth;
-
-  /// Si true, occupe tout l'écran avec un fond semi-transparent
   final bool fullScreen;
 
   const LoadingIndicator({
@@ -48,27 +41,32 @@ class LoadingIndicator extends StatelessWidget {
             ),
           ),
         ),
-        if (fullScreen) ...[
-          const SizedBox(height: 16),
-          Text(
-            AppStrings.loading,
-            style: const TextStyle(
-              color: AppColors.white,
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
+        // Texte visible uniquement en mode fullScreen via Visibility
+        Visibility(
+          visible: fullScreen,
+          child: const Padding(
+            padding: EdgeInsets.only(top: 16),
+            child: Text(
+              AppStrings.loading,
+              style: TextStyle(
+                color: AppColors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
-        ],
+        ),
       ],
     );
 
-    if (fullScreen) {
-      return Container(
-        color: Colors.black.withOpacity(0.4),
+    // Overlay fullScreen via Visibility
+    return Visibility(
+      visible: fullScreen,
+      replacement: Center(child: indicator),
+      child: Container(
+        color: Colors.black.withValues(alpha: 0.4),
         child: Center(child: indicator),
-      );
-    }
-
-    return Center(child: indicator);
+      ),
+    );
   }
 }

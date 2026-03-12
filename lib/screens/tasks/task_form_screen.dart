@@ -208,6 +208,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
               const SizedBox(height: 10),
               CustomTextField(
                 controller: _titleController,
+                label: AppStrings.taskTitle,
                 hint: 'Ex: Concevoir la maquette',
                 prefixIcon: Icons.title_rounded,
                 validator: (value) {
@@ -215,7 +216,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
                     return AppStrings.requiredField;
                   }
                   return null;
-                }, label: '',
+                },
               ),
               const SizedBox(height: 20),
 
@@ -224,9 +225,10 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
               const SizedBox(height: 10),
               CustomTextField(
                 controller: _descController,
+                label: AppStrings.taskDescription,
                 hint: 'Details de la tache...',
                 prefixIcon: Icons.notes_rounded,
-                maxLines: 3, label: '',
+                maxLines: 3,
               ),
               const SizedBox(height: 24),
 

@@ -10,10 +10,6 @@ import 'package:sunu_task/widgets/cards/project_card.dart';
 import 'package:sunu_task/widgets/common/custom_button.dart';
 import 'package:sunu_task/widgets/common/custom_text_field.dart';
 
-/// Ecran de creation ET de modification d'un projet.
-///
-/// Mode creation  : project == null  → bouton "Ajouter"
-/// Mode modification : project != null → bouton "Enregistrer" + champs pre-remplis
 class ProjectFormScreen extends StatefulWidget {
   final Project? project;
   final AuthProvider authProvider;
@@ -36,16 +32,15 @@ class _ProjectFormScreenState extends State<ProjectFormScreen> {
   late final TextEditingController _descController;
   late int _selectedColor;
 
-  // 8 couleurs predefinies
   static const List<int> _projectColors = [
-    0xFF4F7AF8, // Bleu
-    0xFF10B981, // Vert
-    0xFFF59E0B, // Orange
-    0xFFEF4444, // Rouge
-    0xFF8B5CF6, // Violet
-    0xFF06B6D4, // Cyan
-    0xFFEC4899, // Rose
-    0xFF6B7280, // Gris
+    0xFF4F7AF8,
+    0xFF10B981,
+    0xFFF59E0B,
+    0xFFEF4444,
+    0xFF8B5CF6,
+    0xFF06B6D4,
+    0xFFEC4899,
+    0xFF6B7280,
   ];
 
   bool get _isEditing => widget.project != null;
@@ -66,8 +61,6 @@ class _ProjectFormScreenState extends State<ProjectFormScreen> {
     _descController.dispose();
     super.dispose();
   }
-
-  // ── Soumission ────────────────────────────────────────────────────────────
 
   Future<void> _handleSubmit() async {
     if (!_formKey.currentState!.validate()) return;
@@ -103,8 +96,6 @@ class _ProjectFormScreenState extends State<ProjectFormScreen> {
     Navigator.pop(context, true);
   }
 
-  // ── Build ─────────────────────────────────────────────────────────────────
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -130,23 +121,22 @@ class _ProjectFormScreenState extends State<ProjectFormScreen> {
       ),
       body: Form(
         key: _formKey,
-        onChanged: () => setState(() {}), // Rebuild pour l'apercu
+        onChanged: () => setState(() {}),
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ── Apercu en temps reel ───────────────────────────────────
               _buildSectionTitle('Apercu'),
               const SizedBox(height: 10),
               _buildPreview(),
               const SizedBox(height: 28),
 
-              // ── Nom du projet ──────────────────────────────────────────
               _buildSectionTitle(AppStrings.projectName),
               const SizedBox(height: 10),
               CustomTextField(
                 controller: _nameController,
+                label: AppStrings.projectName,
                 hint: 'Ex: Application mobile',
                 prefixIcon: Icons.folder_outlined,
                 validator: (value) {
@@ -157,35 +147,31 @@ class _ProjectFormScreenState extends State<ProjectFormScreen> {
                     return 'Le nom doit contenir au moins 3 caracteres';
                   }
                   return null;
-                }, label: '',
+                },
               ),
               const SizedBox(height: 20),
 
-              // ── Description ────────────────────────────────────────────
               _buildSectionTitle(AppStrings.projectDescription),
               const SizedBox(height: 10),
               CustomTextField(
                 controller: _descController,
+                label: AppStrings.projectDescription,
                 hint: 'Decrivez brievement ce projet...',
                 prefixIcon: Icons.notes_rounded,
-                maxLines: 4, label: '',
+                maxLines: 4,
               ),
               const SizedBox(height: 24),
 
-              // ── Selecteur de couleur ───────────────────────────────────
               _buildSectionTitle(AppStrings.projectColor),
               const SizedBox(height: 14),
               _buildColorPicker(),
               const SizedBox(height: 36),
 
-              // ── Bouton soumission ──────────────────────────────────────
               ListenableBuilder(
                 listenable: widget.projectProvider,
                 builder: (context, _) {
                   return CustomButton(
-                    text: _isEditing
-                        ? AppStrings.save
-                        : AppStrings.add,
+                    text: _isEditing ? AppStrings.save : AppStrings.add,
                     onPressed: _handleSubmit,
                     isLoading: widget.projectProvider.isLoading,
                     icon: _isEditing
@@ -202,8 +188,6 @@ class _ProjectFormScreenState extends State<ProjectFormScreen> {
       ),
     );
   }
-
-  // ── Apercu temps reel ─────────────────────────────────────────────────────
 
   Widget _buildPreview() {
     final Project previewProject = Project(
@@ -231,8 +215,6 @@ class _ProjectFormScreenState extends State<ProjectFormScreen> {
       child: ProjectCard(project: previewProject, taskCount: 0),
     );
   }
-
-  // ── Selecteur de 8 couleurs ───────────────────────────────────────────────
 
   Widget _buildColorPicker() {
     return Wrap(
@@ -265,10 +247,12 @@ class _ProjectFormScreenState extends State<ProjectFormScreen> {
               ]
                   : null,
             ),
-            child: isSelected
-                ? const Icon(Icons.check_rounded,
-                color: Colors.white, size: 22)
-                : null,
+            // Coche via Visibility
+            child: Visibility(
+              visible: isSelected,
+              child: const Icon(Icons.check_rounded,
+                  color: Colors.white, size: 22),
+            ),
           ),
         );
       }).toList(),

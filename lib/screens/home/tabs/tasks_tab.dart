@@ -23,14 +23,11 @@ class TasksTab extends StatelessWidget {
     return ListenableBuilder(
       listenable: taskProvider,
       builder: (context, _) {
-        final tasks = taskProvider.tasks; // Filtre + tri automatiques
+        final tasks = taskProvider.tasks;
 
         return Column(
           children: [
-            // Barre de filtres horizontale
             _buildFilterBar(),
-
-            // Liste ou etat vide
             Expanded(
               child: tasks.isEmpty
                   ? _buildEmptyState()
@@ -40,9 +37,7 @@ class TasksTab extends StatelessWidget {
                 itemBuilder: (context, index) {
                   return TaskCard(
                     task: tasks[index],
-                    onTap: () {
-                      // TODO Partie 5 : TaskDetailScreen
-                    },
+                    onTap: () {},
                   );
                 },
               ),
@@ -52,8 +47,6 @@ class TasksTab extends StatelessWidget {
       },
     );
   }
-
-  // ── Barre de filtres ──────────────────────────────────────────────────────
 
   Widget _buildFilterBar() {
     return Container(
@@ -72,8 +65,6 @@ class TasksTab extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 10),
-
-            // Tout (efface les filtres)
             _FilterChip(
               label: 'Tout',
               isActive: !taskProvider.hasActiveFilters,
@@ -81,8 +72,6 @@ class TasksTab extends StatelessWidget {
               onTap: taskProvider.clearFilters,
             ),
             const SizedBox(width: 6),
-
-            // Filtres par statut
             _FilterChip(
               label: AppStrings.statusTodo,
               isActive: taskProvider.statusFilter == TaskStatus.todo,
@@ -96,8 +85,7 @@ class TasksTab extends StatelessWidget {
             const SizedBox(width: 6),
             _FilterChip(
               label: AppStrings.statusInProgress,
-              isActive:
-              taskProvider.statusFilter == TaskStatus.inProgress,
+              isActive: taskProvider.statusFilter == TaskStatus.inProgress,
               color: AppColors.statusInProgress,
               onTap: () => taskProvider.setStatusFilter(
                 taskProvider.statusFilter == TaskStatus.inProgress
@@ -116,17 +104,12 @@ class TasksTab extends StatelessWidget {
                     : TaskStatus.done,
               ),
             ),
-
-            // Séparateur vertical
             const SizedBox(width: 10),
             Container(width: 1, height: 22, color: AppColors.border),
             const SizedBox(width: 10),
-
-            // Filtres par priorité
             _FilterChip(
               label: AppStrings.priorityHigh,
-              isActive:
-              taskProvider.priorityFilter == TaskPriority.high,
+              isActive: taskProvider.priorityFilter == TaskPriority.high,
               color: AppColors.priorityHigh,
               onTap: () => taskProvider.setPriorityFilter(
                 taskProvider.priorityFilter == TaskPriority.high
@@ -137,8 +120,7 @@ class TasksTab extends StatelessWidget {
             const SizedBox(width: 6),
             _FilterChip(
               label: AppStrings.priorityMedium,
-              isActive:
-              taskProvider.priorityFilter == TaskPriority.medium,
+              isActive: taskProvider.priorityFilter == TaskPriority.medium,
               color: AppColors.priorityMedium,
               onTap: () => taskProvider.setPriorityFilter(
                 taskProvider.priorityFilter == TaskPriority.medium
@@ -149,8 +131,7 @@ class TasksTab extends StatelessWidget {
             const SizedBox(width: 6),
             _FilterChip(
               label: AppStrings.priorityLow,
-              isActive:
-              taskProvider.priorityFilter == TaskPriority.low,
+              isActive: taskProvider.priorityFilter == TaskPriority.low,
               color: AppColors.priorityLow,
               onTap: () => taskProvider.setPriorityFilter(
                 taskProvider.priorityFilter == TaskPriority.low
@@ -163,8 +144,6 @@ class TasksTab extends StatelessWidget {
       ),
     );
   }
-
-  // ── Etat vide ─────────────────────────────────────────────────────────────
 
   Widget _buildEmptyState() {
     final bool hasFilters = taskProvider.hasActiveFilters;
@@ -182,11 +161,8 @@ class TasksTab extends StatelessWidget {
                 color: AppColors.primary.withValues(alpha: 0.08),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
-                Icons.checklist_rounded,
-                size: 50,
-                color: AppColors.primary,
-              ),
+              child: const Icon(Icons.checklist_rounded,
+                  size: 50, color: AppColors.primary),
             ),
             const SizedBox(height: 24),
             Text(
@@ -209,20 +185,22 @@ class TasksTab extends StatelessWidget {
                 height: 1.5,
               ),
             ),
-            if (hasFilters) ...[
-              const SizedBox(height: 16),
-              TextButton.icon(
-                onPressed: taskProvider.clearFilters,
-                icon: const Icon(
-                  Icons.filter_alt_off_outlined,
-                  color: AppColors.primary,
-                ),
-                label: const Text(
-                  'Effacer les filtres',
-                  style: TextStyle(color: AppColors.primary),
+            // Bouton "Effacer les filtres" via Visibility
+            Visibility(
+              visible: hasFilters,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 16),
+                child: TextButton.icon(
+                  onPressed: taskProvider.clearFilters,
+                  icon: const Icon(Icons.filter_alt_off_outlined,
+                      color: AppColors.primary),
+                  label: const Text(
+                    'Effacer les filtres',
+                    style: TextStyle(color: AppColors.primary),
+                  ),
                 ),
               ),
-            ],
+            ),
           ],
         ),
       ),
@@ -251,8 +229,7 @@ class _FilterChip extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding:
-        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
           color: isActive
               ? color.withValues(alpha: 0.15)
@@ -267,8 +244,7 @@ class _FilterChip extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: 12,
-            fontWeight:
-            isActive ? FontWeight.w600 : FontWeight.normal,
+            fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
             color: isActive ? color : AppColors.textSecondary,
           ),
         ),

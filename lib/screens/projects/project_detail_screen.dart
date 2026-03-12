@@ -139,8 +139,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildStatsSection(
-                        todoCount, inProgressCount, doneCount),
+                    _buildStatsSection(todoCount, inProgressCount, doneCount),
                     _buildCreationDate(),
                     const Divider(
                         color: AppColors.border,
@@ -148,11 +147,9 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                         indent: 20,
                         endIndent: 20),
                     Padding(
-                      padding:
-                      const EdgeInsets.fromLTRB(20, 20, 20, 8),
+                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
                       child: Row(
-                        mainAxisAlignment:
-                        MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
                             '${AppStrings.tasks} (${allTasks.length})',
@@ -162,8 +159,10 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                               color: AppColors.textPrimary,
                             ),
                           ),
-                          if (widget.taskProvider.isLoading)
-                            const SizedBox(
+                          // Loader via Visibility
+                          Visibility(
+                            visible: widget.taskProvider.isLoading,
+                            child: const SizedBox(
                               width: 16,
                               height: 16,
                               child: CircularProgressIndicator(
@@ -171,6 +170,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                   valueColor: AlwaysStoppedAnimation(
                                       AppColors.primary)),
                             ),
+                          ),
                         ],
                       ),
                     ),
@@ -178,8 +178,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                 ),
               ),
               tasks.isEmpty
-                  ? SliverFillRemaining(
-                  child: _buildEmptyTasks())
+                  ? SliverFillRemaining(child: _buildEmptyTasks())
                   : SliverList(
                 delegate: SliverChildBuilderDelegate(
                       (context, index) => TaskCard(
@@ -199,8 +198,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                   childCount: tasks.length,
                 ),
               ),
-              const SliverToBoxAdapter(
-                  child: SizedBox(height: 100)),
+              const SliverToBoxAdapter(child: SizedBox(height: 100)),
             ],
           );
         },
@@ -224,8 +222,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
       backgroundColor: _project.projectColor,
       leading: IconButton(
         onPressed: () => Navigator.pop(context),
-        icon: const Icon(Icons.arrow_back_rounded,
-            color: Colors.white),
+        icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
       ),
       actions: [
         IconButton(
@@ -235,8 +232,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
         ),
         IconButton(
           onPressed: _confirmDelete,
-          icon: const Icon(Icons.delete_outline_rounded,
-              color: Colors.white),
+          icon: const Icon(Icons.delete_outline_rounded, color: Colors.white),
           tooltip: AppStrings.delete,
         ),
       ],
@@ -269,20 +265,23 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  if (_project.description != null &&
-                      _project.description!.isNotEmpty) ...[
-                    const SizedBox(height: 6),
-                    Text(
-                      _project.description!,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color:
-                        Colors.white.withValues(alpha: 0.85),
+                  // Description via Visibility
+                  Visibility(
+                    visible: _project.description != null &&
+                        _project.description!.isNotEmpty,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 6),
+                      child: Text(
+                        _project.description ?? '',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.white.withValues(alpha: 0.85),
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
                     ),
-                  ],
+                  ),
                 ],
               ),
             ),
@@ -374,6 +373,8 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
   }
 }
 
+// ── Chip de statistique ───────────────────────────────────────────────────────
+
 class _StatChip extends StatelessWidget {
   final String label;
   final int count;
@@ -396,8 +397,8 @@ class _StatChip extends StatelessWidget {
           Container(
               width: 8,
               height: 8,
-              decoration: BoxDecoration(
-                  color: color, shape: BoxShape.circle)),
+              decoration:
+              BoxDecoration(color: color, shape: BoxShape.circle)),
           const SizedBox(width: 6),
           Text('$count $label',
               style: TextStyle(
