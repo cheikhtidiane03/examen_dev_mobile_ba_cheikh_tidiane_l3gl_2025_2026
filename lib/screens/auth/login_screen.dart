@@ -28,7 +28,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  // Clé pour déclencher la validation du formulaire
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   // Controllers pour lire les valeurs des champs
@@ -37,36 +37,27 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void dispose() {
-    // IMPORTANT : libérer la mémoire des controllers
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
-  // ── Logique de connexion ─────────────────────────────────────────────────
-
   Future<void> _handleLogin() async {
-    // 1. Valider tous les champs — arrêter si une erreur existe
     if (!_formKey.currentState!.validate()) return;
 
-    // 2. Appeler AuthProvider.login()
     final bool success = await widget.authProvider.login(
       _emailController.text.trim(),
       _passwordController.text,
     );
 
-    // Vérifier que le widget est encore monté après l'await
     if (!mounted) return;
 
     if (success) {
-      // 3a. Charger les projets de l'utilisateur connecté
       await widget.projectProvider.loadProjects(
         widget.authProvider.currentUser!.id,
       );
       if (!mounted) return;
 
-      // 3b. Naviguer vers HomeScreen en supprimant toute la pile
-      // pushAndRemoveUntil → l'utilisateur ne peut pas revenir en arrière
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
@@ -76,10 +67,9 @@ class _LoginScreenState extends State<LoginScreen> {
             taskProvider: widget.taskProvider,
           ),
         ),
-            (route) => false, // Supprimer TOUS les écrans précédents
+            (route) => false,
       );
     } else {
-      // 3c. Afficher l'erreur dans un SnackBar
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -94,8 +84,6 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     }
   }
-
-  // ── Interface ────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -179,7 +167,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   label: AppStrings.password,
                   controller: _passwordController,
                   prefixIcon: Icons.lock_outline,
-                  obscureText: true, // Active le toggle œil automatiquement
+                  obscureText: true,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return AppStrings.passwordRequired;
@@ -192,9 +180,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 32),
 
-                // ── Bouton Se connecter (avec état loading) ──────────────
-                // ListenableBuilder se reconstruit quand authProvider change
-                // (isLoading passe à true/false pendant la requête)
                 ListenableBuilder(
                   listenable: widget.authProvider,
                   builder: (context, _) {
