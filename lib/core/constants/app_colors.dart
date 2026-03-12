@@ -1,31 +1,31 @@
+// lib/core/constants/app_colors.dart
+
 import 'package:flutter/material.dart';
 
 /**
  * Palette de couleur de l'application SunuTask
  */
 class AppColors {
-  AppColors._(); // Constructeur privé pour empecher l'instanciation
+  AppColors._();
 
-  //========= Couleurs principales ==============
-  //
   /**
    * Le format hexadecimal se decompose ainsi:
    * - 0x : Prefixe hexadecimale en Dart
-   * - FF: Opacite(FF =100%, 80 = 50%)
-   * - 293ED: Code couleur RGB(Rouge-Vert-Bleu)
+   * - FF : Opacite (FF = 100%, 80 = 50%)
+   * - 0293ED : Code couleur RGB (Rouge-Vert-Bleu)
    */
   static const Color primary = Color(0xFF0293ED);
   static const Color primaryLight = Color(0xFF64BBF1);
   static const Color primaryDark = Color(0xFF03436D);
 
-  //========= Couleurs secondaires ==============
+  // ========= Couleurs secondaires ==============
 
   static const Color secondary = Color(0xFF61E561);
   static const Color secondaryLight = Color(0xFF41F246);
   static const Color secondaryDark = Color(0xFF05412B);
   static const Color white = Color(0xFFFFFFFF);
 
-  //========= Couleurs neutres ==============
+  // ========= Couleurs neutres ==============
 
   /// Fond de l'application
   static const Color background = Color(0xFFE2DEDE);
@@ -45,7 +45,7 @@ class AppColors {
   /// Bordures et separateurs
   static const Color border = Color(0xFFCECECE);
 
-  //========= Couleurs neutres ==============
+  // ========= Couleurs semantiques ==============
 
   /// Succes - Vert
   static const Color success = Color(0xFF22C55E);
@@ -63,7 +63,7 @@ class AppColors {
   static const Color info = Color(0xFF3B82F6);
   static const Color infoLight = Color(0xFF7EAAF1);
 
-// ============== Couleurs des priorites ==============
+  // ============== Couleurs des priorites ==============
 
   /// Priorite basse
   static const Color priorityLow = Color(0xFF22C55E);
@@ -84,4 +84,55 @@ class AppColors {
 
   /// Termine
   static const Color statusDone = Color(0xFF22C55E);
+
+  // ============== Couleurs des projets ==============
+
+  /// Bleu-violet (couleur par defaut)
+  static const Color projectBlue = Color(0xFF4F7AF8);
+
+  /// Vert emeraude
+  static const Color projectGreen = Color(0xFF10B981);
+
+  /// Ambre / Jaune
+  static const Color projectAmber = Color(0xFFF59E0B);
+
+  /// Rouge coral
+  static const Color projectRed = Color(0xFFEF4444);
+
+  /// Violet
+  static const Color projectPurple = Color(0xFF8B5CF6);
+
+  /// Cyan
+  static const Color projectCyan = Color(0xFF06B6D4);
+
+  /// Rose
+  static const Color projectPink = Color(0xFFEC4899);
+
+  /// Gris ardoise
+  static const Color projectGray = Color(0xFF6B7280);
+
+  /// Liste ordonnee des 8 couleurs de projet (type Color, pour les widgets)
+  static const List<Color> projectColors = [
+    projectBlue,
+    projectGreen,
+    projectAmber,
+    projectRed,
+    projectPurple,
+    projectCyan,
+    projectPink,
+    projectGray,
+  ];
+
+  static const List<int> projectColorValues = [
+    0xFF4F7AF8, // projectBlue
+    0xFF10B981, // projectGreen
+    0xFFF59E0B, // projectAmber
+    0xFFEF4444, // projectRed
+    0xFF8B5CF6, // projectPurple
+    0xFF06B6D4, // projectCyan
+    0xFFEC4899, // projectPink
+    0xFF6B7280, // projectGray
+  ];
+
+  static const Color projectDefaultColor = projectBlue;
 }

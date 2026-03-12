@@ -1,13 +1,13 @@
 // lib/models/project.dart
 
 import 'package:flutter/material.dart';
+import 'package:sunu_task/core/constants/app_colors.dart';
 
 /**
  * Les modeles sont immutables(final) pour éviter les
  * modifications et faciliter la gestion d'etat
  */
 class Project {
-
   final String id;
 
   final String userId;
@@ -91,22 +91,9 @@ class Project {
     );
   }
 
-  /**
-   * Les 8 couleurs proposées dans le sélecteur du formulaire projet
-   */
-  static const List<Color> predefinedColors = [
-    Color(0xFF6C63FF), // Violet  (couleur principale)
-    Color(0xFF4CAF50), // Vert
-    Color(0xFF2196F3), // Bleu
-    Color(0xFFFF9800), // Orange
-    Color(0xFFE91E63), // Rose
-    Color(0xFF00BCD4), // Cyan
-    Color(0xFFFF5722), // Rouge-orangé
-    Color(0xFF9C27B0), // Mauve
-  ];
+  static List<Color> get predefinedColors => AppColors.projectColors;
 
-  /// Couleur par défaut lors de la création d'un projet
-  static Color get defaultColor => predefinedColors.first;
+  static Color get defaultColor => AppColors.projectDefaultColor;
 
   @override
   String toString() {
